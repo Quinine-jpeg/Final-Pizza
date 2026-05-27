@@ -28,8 +28,8 @@ def signup():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        DoB = request.form["dob"]
-        dbHandler.insertUser(username, password, email, uid)
+        email = request.form["email"]
+        dbHandler.insertUser(username, password, email)
         return render_template("/index.html")
     else:
         return render_template("/signup.html")
