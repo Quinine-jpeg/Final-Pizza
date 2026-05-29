@@ -1,10 +1,10 @@
 -- database: ../database/data.db
 
-drop table if exists users;
-create table users (id integer primary key autoincrement, username text not null, password text not null, email text not null);
+--drop table if exists users;
+--create table users (id integer primary key autoincrement, username text not null, password text not null, email text not null, address text not null);
 
-drop table if exists orders;
-create table orders (id integer primary key autoincrement, userid integer not null, pizzas text not null);
+--drop table if exists orders;
+--create table orders (id integer primary key autoincrement, userid integer, pizzas text not null, address text);
 
-drop table if exists pizzas;
-create table pizzas (id integer primary key autoincrement, base integer not null, instruct text not null);
+--drop table if exists pizzas;
+--create table pizzas (id integer primary key autoincrement, base integer not null, instruct text not null);

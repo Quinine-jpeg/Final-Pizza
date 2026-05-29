@@ -4,10 +4,10 @@ import random
 
 
 def insertUser(username, password, email):
-    con = sql.connect("../database_files/database.db")
+    con = sql.connect("../database/data.db")
     cur = con.cursor()
     cur.execute(
-        "INSERT INTO users (username,password,email,uid) VALUES (?,?,?)",
+        "INSERT INTO users (username,password,email) VALUES (?,?,?)",
         (username, password, email),
     )
     con.commit()
@@ -15,7 +15,7 @@ def insertUser(username, password, email):
 
 
 def retrieveUsers(username, password):
-    con = sql.connect("../database_files/database.db")
+    con = sql.connect("../database/data.db")
     cur = con.cursor()
     cur.execute(f"SELECT * FROM users WHERE username = '{username}' and password = '{password}'")
     if cur.fetchone() == None:
@@ -33,4 +33,13 @@ def retrieveUsers(username, password):
         con.close()
         return True
 
+def addOrder(pizzas, uid='g', address=None):
+    pizzas = ' '.join(pizzas)
+    con = sql.connect('../database/data.db')
+    cur = con.cursor()
 
+    if address == None and uid:
+        cur.execute(f"select address from users where id = '{uid}'")
+        address = cur.fetchone()
+
+    cur.execute(f"insert into orders (userid, pizzas, address) values ({uid, pizzas, address})")
