@@ -43,3 +43,12 @@ def addOrder(pizzas, uid='g', address=None):
         address = cur.fetchone()
 
     cur.execute(f"insert into orders (userid, pizzas, address) values ({uid, pizzas, address})")
+    con.close()
+
+def retrieveOrder(id, criteria):
+    con = sql.connect('../database/data.db')
+    cur = con.cursor()
+    cur.execute(f"select * from orders where {criteria} = {id}")
+    con.close()
+    return cur.fetchall()
+
