@@ -13,7 +13,6 @@ def insertUser(username, password, email):
     con.commit()
     con.close()
 
-
 def retrieveUsers(username, password):
     con = sql.connect("../database/data.db")
     cur = con.cursor()
@@ -46,9 +45,30 @@ def addOrder(pizzas, uid='g', address=None):
     con.close()
 
 def retrieveOrder(id, criteria):
+    "find what orders fill a criteria"
     con = sql.connect('../database/data.db')
     cur = con.cursor()
     cur.execute(f"select * from orders where {criteria} = {id}")
     con.close()
     return cur.fetchall()
 
+def addPizza(name):
+    con = sql.connect('../database/data.db')
+    cur = con.cursor()
+    cur.execute(f"insert into pizzas (name) values ({name})")
+    con.close()
+
+def retPizzas(num:int):
+    "find next [num] pizzas"
+    print('called function')
+    pizzas = []
+    con = sql.connect('../database/data.db')
+    cur = con.cursor()
+    cur.execute(f"select * from orders where status = 'pending' order by id")
+    orders = cur.fetchall()
+    for i in orders:
+        for j in i[2]:
+            if j.isnumeric():
+                pizzas.append(j)
+
+    return pizzas[:num]

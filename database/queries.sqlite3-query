@@ -4,7 +4,11 @@
 --create table users (id integer primary key autoincrement, username text not null, password text not null, email text not null, address text not null);
 
 --drop table if exists orders;
---create table orders (id integer primary key autoincrement, userid integer, pizzas text not null, address text);
+--create table orders (id integer primary key autoincrement, userid integer, pizzas text not null, address text, status);
 
 --drop table if exists pizzas;
---create table pizzas (id integer primary key autoincrement, base integer not null, instruct text not null);
+--create table pizzas (id integer primary key autoincrement, name text not null);
+
+--insert into orders (userid, pizzas, address, status) values (1, '[5, 4, 7]', '10 Downing Street', 'pending')
+--insert into orders (userid, pizzas, address, status) values (2, '[2, 1, 8, 11]', '331b Baker Street', 'pending')
+--insert into orders (userid, pizzas, address, status) values (3, '[8, 3]', 'Middle of Nowhere', 'pending')
