@@ -10,9 +10,12 @@ pizza_ids = {
 def insertUser(username, password, email):
     con = sql.connect("../database/data.db")
     cur = con.cursor()
+    cur.execute(f"select * from users where email = {email}")
+    if cur.fetchall() == None:
+        return False
     cur.execute(
         "INSERT INTO users (username,password,email) VALUES (?,?,?)",
-        (username, password, email),
+        (username, password, email)
     )
     con.commit()
     con.close()

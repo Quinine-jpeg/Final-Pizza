@@ -1,0 +1,10 @@
+{% extends layout.html %}
+<form action="/" method="post" class="box">
+  <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+  <input type="radio" name="cctype" id="visa"><label for="visa"><img src="../static/assets/visa.png"></label>
+  <input type="radio" name="cctype" id="mcard"><label for="mcard"><img src="../static/assets/mcard.png"></label>
+  <input type="radio" name="cctype" id="amex"><label for="amex"><img src="../static/assets/amex.png"></label>
+  <input type="text" name="number" id="number" pattern="[0-9]" placeholder="Enter credit card number">
+  <input type="number" name="money" id="money" placeholder="Enter how much you want to deposit">
+  <button type="submit">Submit payment</button>
+</form>

@@ -153,3 +153,7 @@ label,
     text-align: justify;
     text-justify: inter-word;
 }
+
+#errorfb {
+    color:rgb(203, 0, 0);
+}

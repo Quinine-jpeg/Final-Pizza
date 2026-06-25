@@ -29,8 +29,10 @@ def signup():
         username = request.form["username"]
         password = request.form["password"]
         email = request.form["email"]
-        dbHandler.insertUser(username, password, email)
-        return render_template("/index.html")
+        if dbHandler.insertUser(username, password, email) == True:
+            return render_template("/home.html")
+        else:
+            return render_template("/signup.html", error="300")
     else:
         return render_template("/signup.html")
 
@@ -54,7 +56,7 @@ def home():
         isLoggedIn = dbHandler.retrieveUsers(username, password)
         if isLoggedIn and username:
             #dbHandler.listFeedback()
-            return render_template("/success.html", value=username, state=isLoggedIn)
+            return render_template("/home.html", value=username, state=isLoggedIn)
         else:
             return render_template("/index.html")
     else:
@@ -63,6 +65,10 @@ def home():
 @app.route("/kitchen.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def kitchen():
     return render_template("/kitchen.html", content = dbHandler.retPizzas(10)) # change based on viewing size
+
+@app.route('payment.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
+def payment():
+    return render_template('/payment.html')
 
 if __name__ == "__main__":
     app.config["TEMPLATES_AUTO_RELOAD"] = True

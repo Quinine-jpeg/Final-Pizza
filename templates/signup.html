@@ -5,5 +5,17 @@
   <input type="text" name="email" id="email" placeholder="Email">
   <input type="text" name="username" id="username" placeholder="Username">
   <input type="password" name="password" id="password" placeholder="Password">
+  <p id="errorfb"></p>
   <button type="submit">Sign up</button>
 </form>
+
+{% block error %}
+<p style="display:none" id="error">{% error %}</p>
+{% endblock %}
+
+<script>
+  setTimeout(() => {if (error.textContent == '300') {
+    errorfb.textContent = 'An account already exists with that email';
+  }}, 500)
+  
+</script>
