@@ -2,6 +2,10 @@ import sqlite3 as sql
 import time
 import random
 
+pizza_ids = {
+    1: 'cheese',
+    2: 'pepperoni'
+} # add more as necessary
 
 def insertUser(username, password, email):
     con = sql.connect("../database/data.db")
@@ -69,6 +73,6 @@ def retPizzas(num:int):
     for i in orders:
         for j in i[2]:
             if j.isnumeric():
-                pizzas.append(j)
+                pizzas.append(pizza_ids[j])
 
     return pizzas[:num]

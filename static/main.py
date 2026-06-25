@@ -34,7 +34,6 @@ def signup():
     else:
         return render_template("/signup.html")
 
-
 @app.route("/index.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 @app.route("/", methods=["POST", "GET"])
 def home():
@@ -61,6 +60,9 @@ def home():
     else:
         return render_template("/index.html")
 
+@app.route("/kitchen.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
+def kitchen():
+    return render_template("/kitchen.html", content = dbHandler.retPizzas(10)) # change based on viewing size
 
 if __name__ == "__main__":
     app.config["TEMPLATES_AUTO_RELOAD"] = True
