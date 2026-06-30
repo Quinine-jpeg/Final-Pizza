@@ -69,13 +69,26 @@ def retPizzas(num:int):
     "find next [num] pizzas"
     print('called function')
     pizzas = []
+    inst = {}
     con = sql.connect('../database/data.db')
     cur = con.cursor()
     cur.execute(f"select * from orders where status = 'pending' order by id")
     orders = cur.fetchall()
     for i in orders:
+        inst[i[0]] = i[5]
         for j in i[2]:
             if j.isnumeric():
                 pizzas.append(pizza_ids[j])
+                if len(pizzas) == num:
+                    return pizzas, inst
+                    # quicker than double breaking
 
-    return pizzas[:num]
+    return pizzas, inst
+
+def retMenu():
+    "show user all available pizzas"
+    con = sql.connect('../database/data.db')
+    cur = con.cursor()
+    cur.execute('select * from pizzas order by id')
+    con.close()
+    return cur.fetchall()

@@ -1,0 +1,23 @@
+{% extends layout.html %}
+{% block content %}
+<table>
+  {% for pizza in content %}
+  <tr id="{{% pizza[1] %}}">
+    <td class="pname">{% pizza[1] %}</td>
+    <td class="descrip">{% pizza[3] %}</td>
+    <td>
+      <p>Qty:</p>
+      <button>+</button>
+      <p id="amount">0</p>
+      <button>-</button>
+    </td>
+    <td class="price">{% pizza[2] %}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<form id="pricebar" action="/" method="post">
+  <div style="align-items: left;"><p>Total items in cart:</p><p id="numitems">0</p></div>
+  <div style="align-items: center"><a><button>Proceed to checkout</button></a></div>
+  <div style="align-items: right"><p>Total price:</p><p id="totprice">0</p></div>
+</form>
