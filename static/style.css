@@ -57,6 +57,11 @@ form.box{
 form {
     width:100%;
 }
+
+.hidden {
+    display:none;
+}
+
 .input__wrapper{
     position:relative;
     padding: 1rem 0 0;

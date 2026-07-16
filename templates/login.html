@@ -5,13 +5,15 @@
   <form action="/" method="post" class="box">
     <input type="hidden" name="category" id="cat">
     <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-    <input type="text" name="username" id="username" placeholder="Username">
+    <input type="text" name="username" id="username" placeholder="Email">
     <input type="password" name="password" id="password" placeholder="Password">
-    <input type="radio" name="user" id="driver"><label for="driver">Sign in as Driver</label>
-    <input type="radio" name="user" id="customer"><label for="customer">Sign in as Customer</label>
+    <input type="radio" name="user" id="driver" value="d" required><label for="driver">Sign in as Driver</label>
+    <input type="radio" name="user" id="customer" value="c"><label for="customer">Sign in as Customer</label>
     <input type="submit">
   </form>
   <a href="/templates/order.html"><button class="btn" id="gst_btn">Use as Guest</button></a>
   <a href="/templates/kitchen.html"><button class="btn">In-kitchen Sign-in</button></a>
 </main>
 {% endblock %}
+
+<!-- in-kitchen would realistically only be available to those with the link -->

@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+/*
 function expand(evt) {
   event.target.classList.toggle('expanded');
 }
@@ -50,4 +51,4 @@ const shortened = document.querySelectorAll('.descrip');
 shortened.forEach(function(el) {
   el.addEventListener('click', expand);
 })
-
+*/

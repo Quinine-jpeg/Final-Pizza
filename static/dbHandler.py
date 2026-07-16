@@ -11,7 +11,7 @@ def insertUser(username, password, email):
     con = sql.connect("../database/data.db")
     cur = con.cursor()
     cur.execute(f"select * from users where email = {email}")
-    if cur.fetchall() == None:
+    if cur.fetchall() != None:
         return False
     cur.execute(
         "INSERT INTO users (username,password,email) VALUES (?,?,?)",
@@ -19,25 +19,21 @@ def insertUser(username, password, email):
     )
     con.commit()
     con.close()
+    return True
 
-def retrieveUsers(username, password):
+def retrieveUsers(username, password=None):
     con = sql.connect("../database/data.db")
     cur = con.cursor()
-    cur.execute(f"SELECT * FROM users WHERE username = '{username}' and password = '{password}'")
-    if cur.fetchone() == None:
-        con.close()
-        return False
+    if password:
+        cur.execute(f"SELECT * FROM users WHERE email = '{username}' and password = '{password}'")
+        if cur.fetchone() == None:
+            con.close()
+            return None
+        else:
+            return cur.fetchone()[0]
     else:
-        # Plain text log of visitor count as requested by Unsecure PWA management
-        with open("visitor_log.txt", "r") as file:
-            number = int(file.read().strip())
-            number += 1
-        with open("visitor_log.txt", "w") as file:
-            file.write(str(number))
-        # Simulate response time of heavy app for testing purposes
-        time.sleep(random.randint(80, 90) / 1000)
-        con.close()
-        return True
+        cur.execute(f"select * from users where email = '{username}'")
+        return cur.fetchone()[0]
 
 def addOrder(pizzas, uid='g', address=None):
     pizzas = ' '.join(pizzas)
@@ -49,7 +45,10 @@ def addOrder(pizzas, uid='g', address=None):
         address = cur.fetchone()
 
     cur.execute(f"insert into orders (userid, pizzas, address) values ({uid, pizzas, address})")
+    cur.execute("select last_insert_rowid()")
     con.close()
+    return cur.fetchone()
+
 
 def retrieveOrder(id, criteria):
     "find what orders fill a criteria"
@@ -92,3 +91,6 @@ def retMenu():
     cur.execute('select * from pizzas order by id')
     con.close()
     return cur.fetchall()
+
+def confOrder():
+    'Confirm that customer has paid for order'

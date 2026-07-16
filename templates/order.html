@@ -1,23 +1,55 @@
 {% extends layout.html %}
 {% block content %}
+
+<form id="order_pizzas" action="/" method="post"></form>
+
 <table>
   {% for pizza in content %}
-  <tr id="{{% pizza[1] %}}">
+  <input type="hidden" value="{% pizza[0] %}">
+  <tr id="{{% pizza[1] %}}-short" onclick="expand">
     <td class="pname">{% pizza[1] %}</td>
     <td class="descrip">{% pizza[3] %}</td>
-    <td>
+    <td class="qty">
       <p>Qty:</p>
-      <button>+</button>
-      <p id="amount">0</p>
-      <button>-</button>
+      <button id="{{% pizza[1] %}}+" class="-" onclick="minusQty">-</button>
+      <input id="{{% pizza[1] %}}-amount-short" value="0" name="{{% pizza[1] %}}" type="number" class="qtynum" readonly>
+      <button id="{{% pizza[1] %}}-" class="+" onclick="addQty">+</button>
+    </td>
+    <td class="price">{% pizza[2] %}</td>
+  </tr>
+  <tr id="{{% pizza[1] %}}-long" class="hidden" onclick="expand">
+    <td class="pizza-img"><img src="{{ url_for('static', filename='assets/{% pizza[0] %}.png') }}"></td>
+    <td class="pname">{% pizza[1] %}</td>
+    <td class="descrip">{% pizza[3] %}</td>
+    <td class="qty">
+      <p>Qty:</p>
+      <button id="{{% pizza[1] %}}+" class="-" onclick="minusQty">-</button>
+      <input id="{{% pizza[1] %}}-amount-long" value="0" name="{{% pizza[1] %}}" type="number" class="qtynum" readonly>
+      <button id="{{% pizza[1] %}}-" class="+" onclick="addQty">+</button>
     </td>
     <td class="price">{% pizza[2] %}</td>
   </tr>
   {% endfor %}
 </table>
 
-<form id="pricebar" action="/" method="post">
-  <div style="align-items: left;"><p>Total items in cart:</p><p id="numitems">0</p></div>
-  <div style="align-items: center"><a><button>Proceed to checkout</button></a></div>
-  <div style="align-items: right"><p>Total price:</p><p id="totprice">0</p></div>
+<div style="align-items: left;"><p>Total items in cart:</p><p id="numitems">0</p></div>
+<div style="align-items: center"><a><button type="submit">Proceed to checkout</button></a></div>
+<div style="align-items: right"><p>Total price:</p><p id="totprice">0</p></div>
+
 </form>
+
+<script>
+  function addQty(evt) {
+    document.getElementByID(evt.target.id + '-amount').value += 1
+  }
+
+  function minusQty(evt) {
+    document.getElementByID(evt.target.id + '-amount').value -= 1
+  }
+
+function expand(evt) {
+  event.target.parentElement.parentElement.querySelectorAll('tr').forEach(element => {
+    element.classList.toggle('hidden');
+  }); //spaghetti code
+}
+</script>
