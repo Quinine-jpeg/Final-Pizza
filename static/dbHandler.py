@@ -2,11 +2,6 @@ import sqlite3 as sql
 import time
 import random
 
-pizza_ids = {
-    1: 'cheese',
-    2: 'pepperoni'
-} # add more as necessary
-
 def insertUser(username, password, email):
     con = sql.connect("../database/data.db")
     cur = con.cursor()
@@ -21,22 +16,29 @@ def insertUser(username, password, email):
     con.close()
     return True
 
-def retrieveUsers(username, password=None):
+def retrieveUsers(username, password):
     con = sql.connect("../database/data.db")
     cur = con.cursor()
-    if password:
-        cur.execute(f"SELECT * FROM users WHERE email = '{username}' and password = '{password}'")
-        if cur.fetchone() == None:
-            con.close()
-            return None
-        else:
-            return cur.fetchone()[0]
+    cur.execute(f"SELECT * FROM users WHERE email = '{username}' and password = '{password}'")
+    if cur.fetchone() == None:
+        con.close()
+        return None
     else:
-        cur.execute(f"select * from users where email = '{username}'")
         return cur.fetchone()[0]
+    
 
-def addOrder(pizzas, uid='g', address=None):
-    pizzas = ' '.join(pizzas)
+def addOrder(pizza, uid='g', address=None):
+    for i in pizza.keys():
+        if pizza[i] == 0:
+            del pizza[i]
+    
+    pizzas = []
+    for i in pizza.keys():
+        for j in range(pizza[i]):
+            pizzas.append(i)
+
+    pizzas = ', '.join(pizzas)
+
     con = sql.connect('../database/data.db')
     cur = con.cursor()
 
@@ -44,11 +46,10 @@ def addOrder(pizzas, uid='g', address=None):
         cur.execute(f"select address from users where id = '{uid}'")
         address = cur.fetchone()
 
-    cur.execute(f"insert into orders (userid, pizzas, address) values ({uid, pizzas, address})")
+    cur.execute(f"insert into orders (userid, pizzas, address, status) values ({uid, pizzas, address, 'unpaid'})")
     cur.execute("select last_insert_rowid()")
     con.close()
     return cur.fetchone()
-
 
 def retrieveOrder(id, criteria):
     "find what orders fill a criteria"
@@ -56,17 +57,10 @@ def retrieveOrder(id, criteria):
     cur = con.cursor()
     cur.execute(f"select * from orders where {criteria} = {id}")
     con.close()
-    return cur.fetchall()
-
-def addPizza(name):
-    con = sql.connect('../database/data.db')
-    cur = con.cursor()
-    cur.execute(f"insert into pizzas (name) values ({name})")
-    con.close()
+    return cur.fetchone()
 
 def retPizzas(num:int):
     "find next [num] pizzas"
-    print('called function')
     pizzas = []
     inst = {}
     con = sql.connect('../database/data.db')
@@ -77,7 +71,7 @@ def retPizzas(num:int):
         inst[i[0]] = i[5]
         for j in i[2]:
             if j.isnumeric():
-                pizzas.append(pizza_ids[j])
+                pizzas.append(pizzas_by_id(j))
                 if len(pizzas) == num:
                     return pizzas, inst
                     # quicker than double breaking
@@ -92,5 +86,39 @@ def retMenu():
     con.close()
     return cur.fetchall()
 
-def confOrder():
+def confOrder(order_num):
     'Confirm that customer has paid for order'
+    con = sql.connect('../database.db')
+    cur = con.cursor()
+    cur.execute(f"select * from orders where id = order_num")
+    uid = cur.fetchone()[1]
+    price = cur.fetchone()[5]
+    cur.execute(f"select * from users where id = {uid}")
+    if cur.fetchone()[5] >= price:
+        cur.execute(f"update orders set status 'cooking' where id = {order_num}")
+        con.close()
+        return True
+    else:
+        return False
+
+def addCredit(uid, amt):
+    con = sql.connect('../database.db')
+    cur = con.cursor()
+    cur.execute(f"select * from users where id = {uid}")
+    amt += cur.fetchone()[5]
+    cur.execute(f"update users set credit {amt} where id = {uid}")
+    con.close()
+
+def pizzas_by_id(id):
+    con = sql.connect('../database.db')
+    cur = con.cursor()
+    cur.execute(f"select * from pizzas where id = {id}")
+    con.close()
+    return cur.fetchone()
+
+def retDetails(id):
+    con = sql.connect('../database.db')
+    cur = con.cursor()
+    cur.execute(f'select * from users where id = {id}')
+    con.close()
+    return cur.fetchone()[1:]

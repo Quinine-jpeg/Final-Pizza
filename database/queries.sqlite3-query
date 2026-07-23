@@ -1,10 +1,11 @@
 -- database: ../database/data.db
 
-drop table if exists users;
-create table users (id integer primary key autoincrement, username text not null, password text not null, email text not null, address text not null, credit integer not null, driver bool);
-drop table drivers
+--drop table if exists users;
+--create table users (id integer primary key autoincrement, username text not null, password text not null, email text not null, address text not null, credit integer not null);
+--drop table drivers
+
 --drop table if exists orders;
---create table orders (id integer primary key autoincrement, userid integer, pizzas text not null, address text, status text not null, instructions text);
+--create table orders (id integer primary key autoincrement, userid integer, pizzas text not null, address text, status text not null, price integer not null);
 -- reset id num at a certain time each day using lines above
 
 --drop table if exists pizzas;

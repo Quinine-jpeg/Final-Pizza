@@ -1,0 +1,7 @@
+{% extends layout.html %}
+
+{% block content %}
+{% for order in content %}
+<p id="{% order %}">{% order %}</p>
+<form action="/" method="post"><button type="submit"></button></form>
+{% endfor %}

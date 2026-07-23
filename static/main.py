@@ -37,11 +37,11 @@ def signup():
 @app.route("/home.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def home():
     if request.method == 'POST':
-        # if it has recieved input
-        session.pop('username', None)
+        # if it has recieved input, log user out
+        session.clear()
         return redirect('/login.html', code=302)
     else:
-        return render_template('/home.html')
+        return render_template('/home.html', ordered=int(bool(dbHandler.retrieveOrder(session['id'], 'uid'))))
 
 @app.route("/kitchen.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def kitchen():
@@ -49,31 +49,51 @@ def kitchen():
 
 @app.route('/payment.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def payment():
-    
-    return render_template('/payment.html')
+    if request.method == 'POST':
+        dbHandler.addCredit(session['id'], request.form['money']) # yes the other stuff on the page is just fudge
+        return redirect(f'/order_success.html')
+    else:
+        return render_template('/payment.html')
 
 @app.route('/order_success.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def order_success():
-    return render_template('/order_success.html', content=dbHandler.retrieveOrder(uid))
+    pizzas = []
+    order_content = dbHandler.retrieveOrder(session['order_num'], 'id')
+    for i in order_content:
+        pizzas.append(dbHandler.pizzas_by_id(i[2]))
+
+    return render_template('/order_success.html', content=[pizzas, order_content[3:5]])
 
 @app.route('/login.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def login():
     if request.method == 'POST':
-        det = [request.form['username'], request.form['password'], request.form['user']]
-        if det[2] == 'c' and dbHandler.retrieveUsers(det[0], det[1]):
+        det = [request.form['username'], request.form['password']]
+        if dbHandler.retrieveUsers(det[0], det[1]):
             session['id'] = dbHandler.retrieveUsers(det[0], det[1])
+            session['address'] = dbHandler.retDetails(session['id'])[3]
             return redirect('/home.html', code=302)
-        elif det[2] == 'd' and dbHandler.retrieveUsers(det[0], det[1]):
-            session['id'] = dbHandler.retrieveUsers(det[0], det[1])
-            return redirect('/driver.html', code=302)
         else:
-            return redirect('/error.html', code=302)
+            return render_template('/login.html', error='Email or password is incorrect')
     else:
         return render_template('/login.html')
 
-@a
-def logout():
-
+@app.route('/order.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
+def order():
+    if request.method == 'POST':
+        form = request.form
+        del form['csrf_token'] # don't need it now
+        id = dbHandler.addOrder(form, session['id'], session['address'])
+        session['order_num'] = id
+        return redirect('/order_success.html')
+    else:
+        return render_template('/order.html', content=dbHandler.retMenu())
+    
+@app.route('/landing.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
+def landing():
+    if session['id']:
+        return redirect('/home.html')
+    else:
+        return redirect('/login.html')
 
 if __name__ == "__main__":
     app.config["TEMPLATES_AUTO_RELOAD"] = True
