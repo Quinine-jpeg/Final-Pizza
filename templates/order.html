@@ -1,4 +1,4 @@
-{% extends layout.html %}
+{% extends "layout.html" %}
 {% block content %}
 
 <form id="order_pizzas" action="/" method="post">
@@ -6,29 +6,17 @@
 
 <table>
   {% for pizza in content %}
-  <tr id="{{% pizza[1] %}}-short" >
-    <td class="pname">{% pizza[1] %}</td>
-    <td class="descrip" onclick="expand">{% pizza[3] %}</td>
+  <tr id="{{ pizza[1] }}">
+    <td class="pizza-img long hidden"><img src="{{ url_for('static', filename='assets/{% pizza[0] %}.png') }}"></td>
+    <td class="pname">{ pizza[1] }</td>
+    <td class="descrip long hidden">{ pizza[3] }</td>
+    <td class="price">${ pizza[2] }</td>
     <td class="qty">
       <p>Qty:</p>
-      <button id="{{% pizza[1] %}}+" class="-" onclick="minusQty">-</button>
-      <input id="{{% pizza[0] %}}-amount-short" value="0" name="{{% pizza[0] %}}" type="number" class="qtynum" readonly>
-      <button id="{{% pizza[1] %}}-" class="+" onclick="addQty">+</button>
+      <button id="{{ pizza[1] }}+" class="-" onclick="minusQty">-</button>
+      <input id="{{ pizza[1] }}-amount" value="0" name="{{ pizza[1] }}" type="number" class="qtynum" readonly>
+      <button id="{{ pizza[1] }}-" class="+" onclick="addQty">+</button>
     </td>
-    <td class="price">{% pizza[2] %}</td>
-  </tr>
-
-  <tr id="{{% pizza[1] %}}-long" class="hidden">
-    <td class="pizza-img"><img src="{{ url_for('static', filename='assets/{% pizza[0] %}.png') }}"></td>
-    <td class="pname">{% pizza[1] %}</td>
-    <td class="descrip" onclick="expand">{% pizza[3] %}</td>
-    <td class="qty">
-      <p>Qty:</p>
-      <button id="{{% pizza[1] %}}+" class="-" onclick="minusQty">-</button>
-      <p id="{{% pizza[1] %}}-amount-long" value="0" name="{{% pizza[1] %}}" type="number" class="qtynum" readonly></p>
-      <button id="{{% pizza[1] %}}-" class="+" onclick="addQty">+</button>
-    </td>
-    <td class="price">{% pizza[2] %}</td>
   </tr>
   {% endfor %}
 </table>
@@ -39,22 +27,38 @@
 
 </form>
 
+{% endblock %}
+
 <script>
   function addQty(evt) {
     evt.target.parentElement.getElementByClassName('qtynum').value += 1;
     numitems.textContent = parseInt(numitems.textContent) + 1;
-    totprice.textContent = parseInt(evt.target.parentElement.getElementByClassName('price').textContent) + parseInt(totprice.textContent);
+    totprice.textContent = parseInt(evt.target.parentElement.parentElement.getElementByClassName('price').textContent) + parseInt(totprice.textContent);
   }
 
   function minusQty(evt) {
     evt.target.parentElement.getElementByClassName('qtynum').value -= 1;
     numitems.textContent = parseInt(numitems.textContent) - 1;
-    totprice.textContent = parseInt(evt.target.parentElement.getElementByClassName('price').textContent) + parseInt(totprice.textContent);
+    totprice.textContent = parseInt(evt.target.parentElement.parentElement.getElementByClassName('price').textContent) + parseInt(totprice.textContent);
   }
 
 function expand(evt) {
-  event.target.parentElement.parentElement.querySelectorAll('tr').forEach(element => {
-    element.classList.toggle('hidden');
-  }); //spaghetti code
+  evt.target.parentElement.querySelectorAll('.long').forEach(el => {
+    el.classList.toggle('hidden')
+  })
 }
+
+function addExpToAll() {
+  document.querySelectorAll('td').forEach(el => {
+    if (!('qty' in el.classList)) {
+      el.onlick = expand
+    }
+  })
+}
+
+document.addEventListener('DOMContentLoaded', addExpToAll)
+
 </script>
+
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>

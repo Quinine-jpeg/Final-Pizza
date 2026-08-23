@@ -1,32 +1,37 @@
 import sqlite3 as sql
-import time
-import random
+
+order_progress = {
+
+}
 
 def insertUser(username, password, email):
     con = sql.connect("../database/data.db")
     cur = con.cursor()
-    cur.execute(f"select * from users where email = {email}")
-    if cur.fetchall() != None:
+    cur.execute(f"select * from users where email = '{email}'")
+    if cur.fetchall() != []:
+        con.close()
         return False
     cur.execute(
-        "INSERT INTO users (username,password,email) VALUES (?,?,?)",
-        (username, password, email)
+        "INSERT INTO users (username, password, email, credit) VALUES (?,?,?,?)",
+        (username, password, email, 0)
     )
     con.commit()
+    cur.execute("select last_insert_rowid()")
+    v = cur.fetchone()
     con.close()
-    return True
+    return v
 
 def retrieveUsers(username, password):
     con = sql.connect("../database/data.db")
     cur = con.cursor()
     cur.execute(f"SELECT * FROM users WHERE email = '{username}' and password = '{password}'")
-    if cur.fetchone() == None:
-        con.close()
-        return None
-    else:
-        return cur.fetchone()[0]
-    
+    v = None
+    if cur.fetchone() != None:
+        v = cur.fetchone()[0]
 
+    con.close()
+    return v
+    
 def addOrder(pizza, uid='g', address=None):
     for i in pizza.keys():
         if pizza[i] == 0:
@@ -47,17 +52,20 @@ def addOrder(pizza, uid='g', address=None):
         address = cur.fetchone()
 
     cur.execute(f"insert into orders (userid, pizzas, address, status) values ({uid, pizzas, address, 'unpaid'})")
+    con.commit()
     cur.execute("select last_insert_rowid()")
+    v = cur.fetchone()
     con.close()
-    return cur.fetchone()
+    return v
 
 def retrieveOrder(id, criteria):
     "find what orders fill a criteria"
     con = sql.connect('../database/data.db')
     cur = con.cursor()
     cur.execute(f"select * from orders where {criteria} = {id}")
+    v = cur.fetchone()
     con.close()
-    return cur.fetchone()
+    return v
 
 def retPizzas(num:int):
     "find next [num] pizzas"
@@ -76,6 +84,7 @@ def retPizzas(num:int):
                     return pizzas, inst
                     # quicker than double breaking
 
+    con.close()
     return pizzas, inst
 
 def retMenu():
@@ -83,12 +92,13 @@ def retMenu():
     con = sql.connect('../database/data.db')
     cur = con.cursor()
     cur.execute('select * from pizzas order by id')
+    v = cur.fetchall()
     con.close()
-    return cur.fetchall()
+    return v
 
 def confOrder(order_num):
     'Confirm that customer has paid for order'
-    con = sql.connect('../database.db')
+    con = sql.connect('../database/data.db')
     cur = con.cursor()
     cur.execute(f"select * from orders where id = order_num")
     uid = cur.fetchone()[1]
@@ -102,7 +112,7 @@ def confOrder(order_num):
         return False
 
 def addCredit(uid, amt):
-    con = sql.connect('../database.db')
+    con = sql.connect('../database/data.db')
     cur = con.cursor()
     cur.execute(f"select * from users where id = {uid}")
     amt += cur.fetchone()[5]
@@ -110,15 +120,22 @@ def addCredit(uid, amt):
     con.close()
 
 def pizzas_by_id(id):
-    con = sql.connect('../database.db')
+    con = sql.connect('../database/data.db')
     cur = con.cursor()
     cur.execute(f"select * from pizzas where id = {id}")
+    v = cur.fetchone()
     con.close()
-    return cur.fetchone()
+    return v
 
 def retDetails(id):
-    con = sql.connect('../database.db')
+    con = sql.connect('../database/data.db')
     cur = con.cursor()
     cur.execute(f'select * from users where id = {id}')
+    v = cur.fetchone()[1:]
     con.close()
-    return cur.fetchone()[1:]
+    return v
+
+def progressOrder(num):
+    con = sql.connect('../database/data.db')
+    cur = con.cursor()
+    cur.execute(f'update')

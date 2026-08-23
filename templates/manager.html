@@ -1,7 +1,11 @@
-{% extends layout.html %}
+{% extends "layout.html" %}
 
 {% block content %}
 {% for order in content %}
 <p id="{% order %}">{% order %}</p>
-<form action="/" method="post"><button type="submit"></button></form>
+<form action="/" method="post"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><button type="submit"></button></form>
 {% endfor %}
+
+
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>

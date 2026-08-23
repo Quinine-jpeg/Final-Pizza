@@ -1,10 +1,14 @@
-{% extends layout.html %}
+{% extends "layout.html" %}
+{% block ordered %}
+
+<main>
 <a href="order.html" id="orderLink"><button>Make an Order</button></a>
 <a href="payment.html"><button>Make a Deposit</button></a>
-<form action='/' method="post"><button type='submit'>Logout</button></form>
-{% block ordered %}
-<p id="orderedFlag" class="hidden">{% ordered %}</p>
+<form action='/' method="post"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><button type='submit'>Logout</button></form>
+
+<p id="orderedFlag" class="hidden">{ ordered }</p>
 {% endblock %}
+</main>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -14,3 +18,6 @@
     } 
   })
 </script>
+
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>

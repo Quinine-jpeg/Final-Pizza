@@ -1,5 +1,5 @@
-{% extends layout.html %}
-<body>
+{% extends "layout.html" %}
+<main>
   {% block content %}
   <table>
     <tr>
@@ -20,7 +20,10 @@
     </tr>
   </table>
   {% endblock %}
-</body>
+</main>
 <script>
   topnav.classList.add(hidden)
 </script>
+
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>

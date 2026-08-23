@@ -1,21 +1,20 @@
-{% extends layout.html %}
-<form action="/" method="post" class="box">
+{% extends "layout.html" %}
+{% block error %}
+
+<main>
+<form action="/signup.html" method="post" class="box">
   <input type="hidden" name="category" id="cat">
   <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
   <input type="text" name="email" id="email" placeholder="Email">
   <input type="text" name="username" id="username" placeholder="Username">
   <input type="password" name="password" id="password" placeholder="Password">
-  <p id="errorfb"></p>
+  <p id="errorfb">{{ error }}</p>
   <button type="submit">Sign up</button>
 </form>
 
-{% block error %}
-<p style="display:none" id="error">{% error %}</p>
+
+<p style="display:none" id="error"></p>
+</main>
 {% endblock %}
 
-<script>
-  setTimeout(() => {if (error.textContent == '300') {
-    errorfb.textContent = 'An account already exists with that email';
-  }}, 500)
-  
-</script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>

@@ -1,17 +1,20 @@
-<!doctype html>
-{% extends layout.html %}
+{% extends "layout.html" %}
 {% block error %}
 <main>
-  <form action="/" method="post" class="box">
+  <form action="/login.html" method="post" class="box">
     <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
     <input type="text" name="username" id="username" placeholder="Email">
     <input type="password" name="password" id="password" placeholder="Password">
-    <p class="error">{% error %}</p>
+    <p class="error">{{ error }}</p>
     <input type="submit">
   </form>
-  <a href="/templates/order.html"><button class="btn" id="gst_btn">Use as Guest</button></a>
-  <a href="/templates/kitchen.html"><button class="btn">In-kitchen Sign-in</button></a>
+  <a href="signup.html"><button class="btn">Create Account</button></a>
+  <a href="order.html"><button class="btn" id="gst_btn">Use as Guest</button></a>
+  <a href="kitchen.html"><button class="btn">In-kitchen Sign-in</button></a>
+  <a href="manager.html"><button class="btn">Order Manager</button></a>
 </main>
 {% endblock %}
 
 <!-- in-kitchen would realistically only be available to those with the link -->
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>

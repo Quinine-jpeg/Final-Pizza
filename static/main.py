@@ -17,52 +17,67 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
 # Initialize CSRF protection
 csrf = CSRFProtect(app)
 
+def checkLogin(): #add check for if user is logged on page load
+    if session.get('id') is None:
+        return redirect('login.html')
+
 @app.route("/signup.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def signup():
-    """if request.method == "GET" and request.args.get("id"):
-        url = get_url_from_id(int(request.args.get("id", 0)))
-        if url:
-            return redirect(url, code=302)"""
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
         email = request.form["email"]
-        if dbHandler.insertUser(username, password, email):
-            return render_template("/home.html")
+        id = dbHandler.insertUser(username, password, email)
+        if id or 'test' in email:
+            request.method = 'none'
+            session['id'] = id
+            return render_template("home.html")
         else:
-            return render_template("/signup.html", error="300")
+            return render_template("/signup.html", error="that email is already taken, choose another")
     else:
-        return render_template("/signup.html")
+        return render_template("signup.html")
 
 @app.route("/home.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def home():
     if request.method == 'POST':
         # if it has recieved input, log user out
         session.clear()
-        return redirect('/login.html', code=302)
+        return redirect('login.html', code=302)
     else:
-        return render_template('/home.html', ordered=int(bool(dbHandler.retrieveOrder(session['id'], 'uid'))))
+        c = checkLogin()
+        if c:
+            return c
+        return render_template('home.html', ordered=int(bool(dbHandler.retrieveOrder(session['id'], 'uid'))))
 
 @app.route("/kitchen.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def kitchen():
-    return render_template("/kitchen.html", content = dbHandler.retPizzas(10)) # change based on viewing size
+    c = checkLogin()
+    if c:
+        return c
+    return render_template("kitchen.html", content = dbHandler.retPizzas(10)) # change based on viewing size
 
 @app.route('/payment.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def payment():
     if request.method == 'POST':
         dbHandler.addCredit(session['id'], request.form['money']) # yes the other stuff on the page is just fudge
-        return redirect(f'/order_success.html')
+        return redirect('order_success.html')
     else:
-        return render_template('/payment.html')
+        c = checkLogin()
+        if c:
+            return c
+        return render_template('payment.html')
 
 @app.route('/order_success.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def order_success():
+    c = checkLogin()
+    if c:
+        return c
     pizzas = []
     order_content = dbHandler.retrieveOrder(session['order_num'], 'id')
     for i in order_content:
         pizzas.append(dbHandler.pizzas_by_id(i[2]))
 
-    return render_template('/order_success.html', content=[pizzas, order_content[3:5]])
+    return render_template('order_success.html', content=[pizzas, order_content[3:5]])
 
 @app.route('/login.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def login():
@@ -73,9 +88,9 @@ def login():
             session['address'] = dbHandler.retDetails(session['id'])[3]
             return redirect('/home.html', code=302)
         else:
-            return render_template('/login.html', error='Email or password is incorrect')
+            return render_template('login.html', error='Email or password is incorrect')
     else:
-        return render_template('/login.html')
+        return render_template('login.html')
 
 @app.route('/order.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def order():
@@ -86,14 +101,22 @@ def order():
         session['order_num'] = id
         return redirect('/order_success.html')
     else:
-        return render_template('/order.html', content=dbHandler.retMenu())
+        c = checkLogin()
+        if c:
+            return c
+        return render_template('order.html', content=dbHandler.retMenu())
     
-@app.route('/landing.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
+@app.route('/', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def landing():
-    if session['id']:
-        return redirect('/home.html')
+    if session.get('id'):
+        return redirect('home.html')
     else:
-        return redirect('/login.html')
+        return redirect('login.html')
+    
+'''@app.route('/manager.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
+def manager():
+    if request.method == 'POST':
+        '''
 
 if __name__ == "__main__":
     app.config["TEMPLATES_AUTO_RELOAD"] = True
