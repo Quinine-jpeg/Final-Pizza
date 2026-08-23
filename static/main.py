@@ -8,7 +8,7 @@ import secrets
 # app.logger.critical("message")
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
-app.secret_key = secrets.token_hex(64)
+#app.secret_key = secrets.token_hex(64)
 
 # Set secret key for CSRF protection
 app.config['SECRET_KEY'] = secrets.token_hex(64)
@@ -47,7 +47,7 @@ def home():
         c = checkLogin()
         if c:
             return c
-        return render_template('home.html', ordered=int(bool(dbHandler.retrieveOrder(session['id'], 'uid'))))
+        return render_template('home.html', ordered=int(bool(dbHandler.retrieveOrder(session['id'], 'userid'))))
 
 @app.route("/kitchen.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def kitchen():
@@ -83,9 +83,12 @@ def order_success():
 def login():
     if request.method == 'POST':
         det = [request.form['username'], request.form['password']]
-        if dbHandler.retrieveUsers(det[0], det[1]):
-            session['id'] = dbHandler.retrieveUsers(det[0], det[1])
-            session['address'] = dbHandler.retDetails(session['id'])[3]
+        uid = dbHandler.retrieveUsers(det[0], det[1])
+        if uid:
+            session['id'] = uid
+            session['address'] = dbHandler.retDetails(uid)[4]
+            if session['address'] == None:
+                session['address'] = ''
             return redirect('/home.html', code=302)
         else:
             return render_template('login.html', error='Email or password is incorrect')
@@ -94,17 +97,17 @@ def login():
 
 @app.route('/order.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def order():
-    if request.method == 'POST':
+    if request.method == 'POST': #
         form = request.form
         del form['csrf_token'] # don't need it now
         id = dbHandler.addOrder(form, session['id'], session['address'])
         session['order_num'] = id
-        return redirect('/order_success.html')
-    else:
+        return redirect('order_success.html')
+    else:#
         c = checkLogin()
         if c:
             return c
-        return render_template('order.html', content=dbHandler.retMenu())
+        return render_template('order.html', content=(dbHandler.retMenu(), session['address']))
     
 @app.route('/', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def landing():
@@ -117,6 +120,7 @@ def landing():
 def manager():
     if request.method == 'POST':
         if request.form['id'] == 'pizza':
+            print(f'New pizza added: {request.form['name']}')
             name = request.form['name']
             descrip = request.form['descrip']
             price = request.form['price']

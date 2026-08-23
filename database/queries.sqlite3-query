@@ -17,7 +17,9 @@ alter table users add column address text;
 delete from users; -- wipe users table
 
 delete from users where email = 'quinn.fryer@stu.pacificeducation.online'; -- wipe my own testing emails
-update sqlite_sequence set seq = 1 where name = 'users'; -- reset autoincrement num
+update sqlite_sequence set seq = 0 where name = 'users'; -- reset autoincrement num
+
+alter table pizzas drop column img;
 
 --insert into orders (userid, pizzas, address, status) values (1, '[5, 4, 7]', '10 Downing Street', 'pending');
 --insert into orders (userid, pizzas, address, status) values (2, '[2, 1, 8, 11]', '331b Baker Street', 'pending');

@@ -24,13 +24,10 @@ def insertUser(username, password, email):
 def retrieveUsers(username, password):
     con = sql.connect("../database/data.db")
     cur = con.cursor()
-    cur.execute(f"SELECT * FROM users WHERE email = '{username}' and password = '{password}'")
-    v = None
-    if cur.fetchone() != None:
-        v = cur.fetchone()[0]
-
+    cur.execute(f"SELECT id FROM users WHERE email = '{username}' and password = '{password}'")
+    id = cur.fetchone()[0]
     con.close()
-    return v
+    return id
     
 def addOrder(pizza, uid='g', address=None):
     for i in pizza.keys():
@@ -91,10 +88,10 @@ def retMenu():
     "show user all available pizzas"
     con = sql.connect('../database/data.db')
     cur = con.cursor()
-    cur.execute('select * from pizzas order by id')
+    cur.execute('select name, price, descrip from pizzas order by id')
     v = cur.fetchall()
     con.close()
-    return v
+    return v 
 
 def confOrder(order_num):
     'Confirm that customer has paid for order'
@@ -122,7 +119,7 @@ def addCredit(uid, amt):
 def pizzas_by_id(id):
     con = sql.connect('../database/data.db')
     cur = con.cursor()
-    cur.execute(f"select * from pizzas where id = {id}")
+    cur.execute(f"select * from pizzas where id = '{id}'")
     v = cur.fetchone()
     con.close()
     return v
@@ -130,10 +127,10 @@ def pizzas_by_id(id):
 def retDetails(id):
     con = sql.connect('../database/data.db')
     cur = con.cursor()
-    cur.execute(f'select * from users where id = {id}')
-    v = cur.fetchone()[1:]
+    cur.execute(f"select username, email, password, credit, address from users where id = {id}")
+    det = cur.fetchone()
     con.close()
-    return v
+    return det
 
 def progressOrder(num):
     con = sql.connect('../database/data.db')
@@ -143,7 +140,8 @@ def progressOrder(num):
 def addPizza(name, descrip, price):
     con = sql.connect('../database/data.db')
     cur = con.cursor()
-    cur.execute(f'insert into pizzas (name, price, descrip) values ("{name}", "{price}", "{descrip}")')
+    cur.execute(f"INSERT INTO pizzas (name, price, descrip) VALUES (?,?,?)", (name, price, descrip))
+    con.commit()
     con.close()
 
 def allOrders():

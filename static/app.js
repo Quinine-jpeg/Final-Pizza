@@ -52,3 +52,43 @@ shortened.forEach(function(el) {
   el.addEventListener('click', expand);
 })
 */
+
+function updateOrderTotal() {
+    const itemCount = document.getElementById('numitems');
+    const totalPrice = document.getElementById('totprice');
+    let count = 0;
+    let price = 0;
+
+    document.querySelectorAll('#order_pizzas .qtynum').forEach(function (input) {
+        const quantity = Number(input.value);
+        const rowPrice = Number(input.closest('tr').querySelector('.price').textContent.replace('$', ''));
+        count += quantity;
+        price += quantity * rowPrice;
+    });
+
+    itemCount.textContent = count;
+    totalPrice.textContent = price;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const orderForm = document.getElementById('order_pizzas');
+    if (!orderForm) return;
+
+    orderForm.querySelectorAll('.qty button').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const input = button.parentElement.querySelector('.qtynum');
+            const change = button.classList.contains('+') ? 1 : -1;
+            input.value = Math.max(0, Number(input.value) + change);
+            updateOrderTotal();
+        });
+    });
+
+    orderForm.querySelectorAll('.expand').forEach(function (button) {
+        button.addEventListener('click', function () {
+            button.closest('tr').querySelectorAll('.long').forEach(function (element) {
+                element.classList.toggle('hidden');
+            });
+            button.textContent = button.textContent === '^' ? '⌄' : '^';
+        });
+    });
+});

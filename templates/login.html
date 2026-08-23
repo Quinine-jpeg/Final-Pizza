@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block error %}
 <main>
-  <form action="/login.html" method="post" class="box">
+  <form method="post" class="box">
     <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
     <input type="text" name="username" id="username" placeholder="Email">
     <input type="password" name="password" id="password" placeholder="Password">
@@ -16,5 +16,3 @@
 {% endblock %}
 
 <!-- in-kitchen would realistically only be available to those with the link -->
-
-<script src="{{ url_for('static', filename='app.js') }}"></script>

@@ -45,6 +45,26 @@ nav h1 {
     color: #333;
     margin-bottom: 0.5rem;
 }
+
+img {
+    max-width: 100px;
+    max-height: 100px;
+}
+
+table {
+    width: 100%;
+}
+
+tr {
+    border-top: 4px;
+    border-color: black;
+}
+
+td {
+    border: 1px;
+    border-color: rgb(37, 37, 37);
+}
+
 .disclaimer{
     margin:50px 0 50px 0;
 }

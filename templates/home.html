@@ -4,7 +4,10 @@
 <main>
 <a href="order.html" id="orderLink"><button>Make an Order</button></a>
 <a href="payment.html"><button>Make a Deposit</button></a>
-<form action='/' method="post"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><button type='submit'>Logout</button></form>
+<form action='/' method="post">
+  <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+  <button type='submit'>Logout</button>
+</form>
 
 <p id="orderedFlag" class="hidden">{ ordered }</p>
 {% endblock %}
