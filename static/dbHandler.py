@@ -139,3 +139,17 @@ def progressOrder(num):
     con = sql.connect('../database/data.db')
     cur = con.cursor()
     cur.execute(f'update')
+
+def addPizza(name, descrip, price):
+    con = sql.connect('../database/data.db')
+    cur = con.cursor()
+    cur.execute(f'insert into pizzas (name, price, descrip) values ("{name}", "{price}", "{descrip}")')
+    con.close()
+
+def allOrders():
+    con = sql.connect('../database/data.db')
+    cur = con.cursor()
+    cur.execute(f'select id, status from orders')
+    ret = cur.fetchall()
+    con.close()
+    return ret

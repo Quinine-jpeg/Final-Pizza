@@ -113,10 +113,21 @@ def landing():
     else:
         return redirect('login.html')
     
-'''@app.route('/manager.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
+@app.route('/manager.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def manager():
     if request.method == 'POST':
-        '''
+        if request.form['id'] == 'pizza':
+            name = request.form['name']
+            descrip = request.form['descrip']
+            price = request.form['price']
+            dbHandler.addPizza(name, descrip, price)
+            return render_template('manager.html', content=(dbHandler.allOrders(), f'created pizza: {name}'))
+        else:
+            num = request.form['order']
+            dbHandler.progressOrder(num)
+            return render_template('manager.html', content=(dbHandler.allOrders(), f'progressed order number {num}'))
+    else:
+        return render_template('manager.html', content=(dbHandler.allOrders(), ''))
 
 if __name__ == "__main__":
     app.config["TEMPLATES_AUTO_RELOAD"] = True

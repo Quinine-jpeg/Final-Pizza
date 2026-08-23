@@ -1,11 +1,29 @@
 {% extends "layout.html" %}
+<main>
 
 {% block content %}
-{% for order in content %}
-<p id="{% order %}">{% order %}</p>
-<form action="/" method="post"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><button type="submit"></button></form>
+<h3>Progress orders</h3>
+{% for order in content[0] %}
+<form action="/" method="post">
+  <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+  <input type="hidden" name="id" value="order">
+  <input type="hidden" name="order" value="{order[0]}">
+  <button type="submit">id { order[0] } status {order[1]}</button>
+</form>
 {% endfor %}
 
+<h3>Add pizza</h3>
+<form action="/" method="post">
+  <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+  <input type="hidden" name="id" value="pizza">
+  <input type="text" name="name">
+  <input type="number" name="price" step="0.01">
+  <input type="text" name="descrip">
+  <button type="submit"></button>
+</form>
 
+<p id="msg">{content[1]}</p>
+{% endblock %}
 
+</main>
 <script src="{{ url_for('static', filename='app.js') }}"></script>
