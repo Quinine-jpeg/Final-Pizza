@@ -47,7 +47,7 @@ def home():
         c = checkLogin()
         if c:
             return c
-        return render_template('home.html', ordered=int(bool(dbHandler.retrieveOrder(session['id'], 'userid'))))
+        return render_template('home.html', ordered=int(bool(dbHandler.ordersByUid(session['id']))))
 
 @app.route("/kitchen.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def kitchen():
@@ -61,6 +61,7 @@ def payment():
     if request.method == 'POST':
         dbHandler.addCredit(session['id'], int(request.form['money'])) # yes the other stuff on the page is just fudge
         if session.get('order_num') is None:
+            session['money'] = request.form['money']
             return redirect('payment_success.html')
         else:
             return redirect('order_success.html')
@@ -75,12 +76,8 @@ def order_success():
     c = checkLogin()
     if c:
         return c
-    pizzas = []
-    order_content = dbHandler.retrieveOrder(session['order_num'], 'id')
-    for i in order_content:
-        pizzas.append(dbHandler.pizzas_by_id(i[2]))
-
-    return render_template('order_success.html', content=[pizzas, order_content[3:5]])
+    order_content = dbHandler.retrieveOrder(session['order_num'][0])
+    return render_template('order_success.html', content=[order_content[2].split(', '), order_content[3:5]])
 
 @app.route('/login.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def login():
@@ -100,10 +97,17 @@ def login():
 
 @app.route('/order.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def order():
-    if request.method == 'POST': #
-        form = request.form
-        del form['csrf_token'] # don't need it now
-        id = dbHandler.addOrder(form, session['id'], session['address'])
+    if request.method == 'POST': 
+        pizzas = {}
+        for i in request.form.keys():
+            if i == 'csrf_token':
+                continue
+            elif i == 'address':
+                session['address'] = request.form[i]
+                continue
+            pizzas[i] = int(request.form[i])
+
+        id = dbHandler.addOrder(pizzas, session['id'], session['address'])
         session['order_num'] = id
         return redirect('order_success.html')
     else:#
@@ -135,6 +139,10 @@ def manager():
             return render_template('manager.html', content=(dbHandler.allOrders(), f'progressed order number {num}'))
     else:
         return render_template('manager.html', content=(dbHandler.allOrders(), ''))
+
+@app.route('/payment_success.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
+def payment_success():
+    return render_template('payment_success.html', content=session.get('money'))
 
 if __name__ == "__main__":
     app.config["TEMPLATES_AUTO_RELOAD"] = True

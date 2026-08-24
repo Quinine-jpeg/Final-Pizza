@@ -21,6 +21,8 @@ update sqlite_sequence set seq = 0 where name = 'users'; -- reset autoincrement 
 
 alter table pizzas drop column img;
 
+delete from orders;
+
 --insert into orders (userid, pizzas, address, status) values (1, '[5, 4, 7]', '10 Downing Street', 'pending');
 --insert into orders (userid, pizzas, address, status) values (2, '[2, 1, 8, 11]', '331b Baker Street', 'pending');
 --insert into orders (userid, pizzas, address, status) values (3, '[8, 3]', 'Middle of Nowhere', 'pending');

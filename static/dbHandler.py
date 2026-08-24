@@ -30,7 +30,7 @@ def retrieveUsers(username, password):
     if id:
         return id[0]
     
-def addOrder(pizza, uid='g', address=None):
+def addOrder(pizza, uid, address=None):
     for i in pizza.keys():
         if pizza[i] == 0:
             del pizza[i]
@@ -49,18 +49,17 @@ def addOrder(pizza, uid='g', address=None):
         cur.execute(f"select address from users where id = '{uid}'")
         address = cur.fetchone()
 
-    cur.execute(f"insert into orders (userid, pizzas, address, status) values ({uid, pizzas, address, 'unpaid'})")
+    cur.execute(f"insert into orders (userid, pizzas, address, status, price) values (?,?,?,?,?)", (uid, pizzas, address, 'unpaid', sum(pizza.values())))
     con.commit()
     cur.execute("select last_insert_rowid()")
     v = cur.fetchone()
     con.close()
     return v
 
-def retrieveOrder(id, criteria):
-    "find what orders fill a criteria"
+def retrieveOrder(id):
     con = sql.connect('../database/data.db')
     cur = con.cursor()
-    cur.execute(f"select * from orders where {criteria} = {id}")
+    cur.execute(f"select * from orders where id = ?", (id,))
     v = cur.fetchone()
     con.close()
     return v
@@ -152,3 +151,9 @@ def allOrders():
     ret = cur.fetchall()
     con.close()
     return ret
+
+def ordersByUid(id):
+    con = sql.connect('../database/data.db')
+    cur = con.cursor()
+    cur.execute('select id from orders where userid = ?', (id,))
+    

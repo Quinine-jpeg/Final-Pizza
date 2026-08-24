@@ -51,6 +51,10 @@ img {
     max-height: 100px;
 }
 
+input[type="number"] {
+    width: 70px;
+}
+
 table {
     width: 80%;
     margin: auto;
