@@ -59,8 +59,11 @@ def kitchen():
 @app.route('/payment.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def payment():
     if request.method == 'POST':
-        dbHandler.addCredit(session['id'], request.form['money']) # yes the other stuff on the page is just fudge
-        return redirect('order_success.html')
+        dbHandler.addCredit(session['id'], int(request.form['money'])) # yes the other stuff on the page is just fudge
+        if session.get('order_num') is None:
+            return redirect('payment_success.html')
+        else:
+            return redirect('order_success.html')
     else:
         c = checkLogin()
         if c:

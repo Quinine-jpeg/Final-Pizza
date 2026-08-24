@@ -1,10 +1,15 @@
 {% extends "layout.html" %}
-<form action="/" method="post" class="box">
+<main>
+{% block content %}
+<form method="post" class="box">
   <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
-  <input type="radio" name="cctype" id="visa"><label for="visa"><img src="{{ url_for('static', 'assets/visa.png') }}"></label>
-  <input type="radio" name="cctype" id="mcard"><label for="mcard"><img src="{{ url_for('static', 'assets/mcard.png') }}"></label>
-  <input type="radio" name="cctype" id="amex"><label for="amex"><img src="{{ url_for('static', 'assets/amex.png') }}"></label>
-  <input type="text" name="number" id="number" pattern="[0-9]" placeholder="Enter credit card number">
+  <input type="radio" name="cctype" id="visa" class="cc"><label for="visa"><img src="{{ url_for('static', filename='assets/visa.png') }}"></label>
+  <input type="radio" name="cctype" id="mcard" class="cc"><label for="mcard"><img src="{{ url_for('static', filename='assets/mcard.png') }}"></label>
+  <input type="radio" name="cctype" id="amex" class="cc"><label for="amex"><img src="{{ url_for('static', filename='assets/amex.png') }}"></label>
+  <input type="text" name="number" id="number" placeholder="Enter credit card number" class="number" inputmode="numeric" maxlength="16">
+  <input type="text" name="sec-code" id="code" placeholder="Enter card security code" maxlength="3" class="number" inputmode="numeric">
   <input type="number" name="money" id="money" placeholder="Enter how much you want to deposit">
   <button type="submit">Submit payment</button>
 </form>
+{% endblock %}
+</main>

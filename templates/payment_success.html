@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+<main>
+  {% block content %}
+  <p>
+    Successfully transferred ${{ content }}.
+  </p>
+  <a href="{{ url_for('static', filename='home.html') }}">
+    <button>Return home</button>
+  </a>
+</main>

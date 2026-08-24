@@ -52,17 +52,18 @@ img {
 }
 
 table {
-    width: 100%;
+    width: 80%;
+    margin: auto;
+    align-items: center;
+    border-collapse: collapse;
 }
 
 tr {
-    border-top: 4px;
     border-color: black;
 }
 
 td {
-    border: 1px;
-    border-color: rgb(37, 37, 37);
+    border: 1px solid rgb(37, 37, 37);
 }
 
 .disclaimer{
@@ -76,6 +77,11 @@ form.box{
 }
 form {
     width:100%;
+}
+
+img .cc {
+    max-width: 40px;
+    max-height: 40px;
 }
 
 .hidden {

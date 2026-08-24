@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 <!--  -->
-
+<main>
 {% block content %}
 <p>You have made an order of:</p>
 {% for pizza in content[0] %}
@@ -10,3 +10,4 @@
 <p>To: {% content[1][0] %}</p>
 <p>Current Status: {% content[1][1] %}</p>
 {% endblock %}
+</main>

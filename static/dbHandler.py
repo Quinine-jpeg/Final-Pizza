@@ -25,9 +25,10 @@ def retrieveUsers(username, password):
     con = sql.connect("../database/data.db")
     cur = con.cursor()
     cur.execute(f"SELECT id FROM users WHERE email = '{username}' and password = '{password}'")
-    id = cur.fetchone()[0]
+    id = cur.fetchone()
     con.close()
-    return id
+    if id:
+        return id[0]
     
 def addOrder(pizza, uid='g', address=None):
     for i in pizza.keys():
@@ -106,14 +107,14 @@ def confOrder(order_num):
         con.close()
         return True
     else:
+        con.close()
         return False
 
 def addCredit(uid, amt):
     con = sql.connect('../database/data.db')
     cur = con.cursor()
-    cur.execute(f"select * from users where id = {uid}")
-    amt += cur.fetchone()[5]
-    cur.execute(f"update users set credit {amt} where id = {uid}")
+    cur.execute(f"update users set credit = credit + ? where id = ?", (amt, uid))
+    con.commit()
     con.close()
 
 def pizzas_by_id(id):

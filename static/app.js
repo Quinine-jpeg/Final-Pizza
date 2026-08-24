@@ -92,3 +92,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+function verifNum(event) {
+  event.target.value = event.target.value.replace(/\D/g, '');
+}
+
+document.querySelectorAll('input.number').forEach(function (el) { 
+  el.addEventListener('input', verifNum);
+})
