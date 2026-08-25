@@ -22,6 +22,12 @@
   <button type="submit">Add pizza</button>
 </form>
 
+<form method="post">
+  <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+  <input type="hidden" name="id" value="clear">
+  <button type="submit">Clear all orders</button>
+</form>
+
 <p id="msg">{{ content[1] }}</p>
 {% endblock %}
 

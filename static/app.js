@@ -100,3 +100,11 @@ function verifNum(event) {
 document.querySelectorAll('input.number').forEach(function (el) { 
   el.addEventListener('input', verifNum);
 })
+
+document.addEventListener('DOMContentLoaded', function () {
+  orderedFlag = document.getElementById('orderedFlag');
+  if (orderedFlag.textContent == '1') {
+    orderLink.orderBtn.textContent = 'View Order';
+    orderLink.href = 'order_success.html';
+  } 
+})

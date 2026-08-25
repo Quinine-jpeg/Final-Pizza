@@ -17,8 +17,8 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
 # Initialize CSRF protection
 csrf = CSRFProtect(app)
 
-def checkLogin(): #add check for if user is logged on page load
-    if session.get('id') is None:
+def checkLogin(admin_only=False): #add check for if user is logged on page load
+    if session.get('id') is None or ((not dbHandler.isAdmin(session['id'])) and admin_only):
         return redirect('login.html')
 
 @app.route("/signup.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
@@ -47,11 +47,11 @@ def home():
         c = checkLogin()
         if c:
             return c
-        return render_template('home.html', ordered=int(bool(dbHandler.ordersByUid(session['id']))))
+        return render_template('home.html', ordered=int(bool(dbHandler.ordersByUid(session['id']))), admin=int(dbHandler.isAdmin(session['id'])))
 
 @app.route("/kitchen.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def kitchen():
-    c = checkLogin()
+    c = checkLogin(admin_only=True)
     if c:
         return c
     return render_template("kitchen.html", content = dbHandler.retPizzas(10)) # change based on viewing size
@@ -64,7 +64,11 @@ def payment():
             session['money'] = request.form['money']
             return redirect('payment_success.html')
         else:
-            return redirect('order_success.html')
+            if dbHandler.confOrder(session['order_num']):
+                session['confirmed'] = True
+                return redirect('order_success.html')
+            else:
+                return redirect('payment.html') # reaload page, not enough money was transferred
     else:
         c = checkLogin()
         if c:
@@ -148,11 +152,17 @@ def manager():
             price = request.form['price']
             dbHandler.addPizza(name, descrip, price)
             return render_template('manager.html', content=(dbHandler.allOrders(), f'created pizza: {name}'))
-        else:
+        elif request.form['id'] == 'order':
             num = request.form['order']
-            dbHandler.progressOrder(num)
-            return render_template('manager.html', content=(dbHandler.allOrders(), f'progressed order number {num}'))
+            status = dbHandler.progressOrder(num)
+            return render_template('manager.html', content=(dbHandler.allOrders(), f'progressed order number {num} to {status}'))
+        else:
+            dbHandler.clearOrders()
+            return render_template('manager.html', content=(dbHandler.allOrders(), 'Cleared all orders'))
     else:
+        c = checkLogin(admin_only=True)
+        if c:
+            return c
         return render_template('manager.html', content=(dbHandler.allOrders(), ''))
 
 @app.route('/payment_success.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
