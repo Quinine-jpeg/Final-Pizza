@@ -4,10 +4,19 @@
 {% block content %}
 <p>You have made an order of:</p>
 {% for pizza in content[0] %}
-<p>{ pizza }</p>
+{% if pizza[1] == 1 %}
+<p>{{ pizza[0] }}</p>
+{% else %}
+<p>{{ pizza[0] }} (x{{ pizza[1] }})</p>
+{% endif %}
 {% endfor %}
 
-<p>To: { content[1][0] }</p>
-<p>Current Status: { content[1][1] }</p>
+<p>To: {{ content[1][0] }}</p>
+<p>Current Status: {{ content[1][1] }}</p>
+
+<a href="home.html">
+  <button>Return Home</button>
+</a>
+
 {% endblock %}
 </main>

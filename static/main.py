@@ -60,7 +60,7 @@ def kitchen():
 def payment():
     if request.method == 'POST':
         dbHandler.addCredit(session['id'], int(request.form['money'])) # yes the other stuff on the page is just fudge
-        if session.get('order_num') is None:
+        if session.get('order_num') is None or session.get('confirmed') != False:
             session['money'] = request.form['money']
             return redirect('payment_success.html')
         else:
@@ -76,8 +76,18 @@ def order_success():
     c = checkLogin()
     if c:
         return c
-    order_content = dbHandler.retrieveOrder(session['order_num'][0])
-    return render_template('order_success.html', content=[order_content[2].split(', '), order_content[3:5]])
+    order_content = dbHandler.retrieveOrder(session['order_num'])
+    pizzas = {}
+    for i in order_content[2].split(', '):
+        if pizzas.get(i):
+            pizzas[i] += 1
+        else:
+            pizzas[i] = 1
+
+    pizza_dict = []
+    for i in pizzas.keys():
+        pizza_dict.append((i, pizzas[i]))
+    return render_template('order_success.html', content=[pizza_dict, order_content[3:5]])
 
 @app.route('/login.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def login():
@@ -109,8 +119,13 @@ def order():
 
         id = dbHandler.addOrder(pizzas, session['id'], session['address'])
         session['order_num'] = id
-        return redirect('order_success.html')
-    else:#
+        if dbHandler.confOrder(id):
+            session['confirmed'] = True
+            return redirect('order_success.html')
+        else:
+            session['confirmed'] = False
+            return redirect('payment.html')
+    else:
         c = checkLogin()
         if c:
             return c
@@ -142,6 +157,9 @@ def manager():
 
 @app.route('/payment_success.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def payment_success():
+    c = checkLogin()
+    if c:
+        return c
     return render_template('payment_success.html', content=session.get('money'))
 
 if __name__ == "__main__":

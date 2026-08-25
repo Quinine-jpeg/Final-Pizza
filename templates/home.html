@@ -4,7 +4,7 @@
 {% block ordered %}
 <a href="order.html" id="orderLink"><button>Make an Order</button></a>
 <a href="payment.html"><button>Make a Deposit</button></a>
-<form action='/' method="post">
+<form method="post">
   <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
   <button type='submit'>Logout</button>
 </form>

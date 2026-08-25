@@ -52,7 +52,7 @@ def addOrder(pizza, uid, address=None):
     cur.execute(f"insert into orders (userid, pizzas, address, status, price) values (?,?,?,?,?)", (uid, pizzas, address, 'unpaid', sum(pizza.values())))
     con.commit()
     cur.execute("select last_insert_rowid()")
-    v = cur.fetchone()
+    v = cur.fetchone()[0]
     con.close()
     return v
 
@@ -97,12 +97,13 @@ def confOrder(order_num):
     'Confirm that customer has paid for order'
     con = sql.connect('../database/data.db')
     cur = con.cursor()
-    cur.execute(f"select * from orders where id = order_num")
-    uid = cur.fetchone()[1]
-    price = cur.fetchone()[5]
-    cur.execute(f"select * from users where id = {uid}")
-    if cur.fetchone()[5] >= price:
-        cur.execute(f"update orders set status 'cooking' where id = {order_num}")
+    cur.execute(f"select userid, price from orders where id = ?", (order_num,))
+    r = cur.fetchone()
+    uid = r[0]
+    price = r[1]
+    cur.execute(f"select credit from users where id = ?", (uid,))
+    if cur.fetchone()[0] >= price:
+        cur.execute(f"update orders set status = 'pending' where id = ?", (order_num,))
         con.close()
         return True
     else:
