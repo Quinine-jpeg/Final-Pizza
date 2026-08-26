@@ -103,8 +103,8 @@ document.querySelectorAll('input.number').forEach(function (el) {
 
 document.addEventListener('DOMContentLoaded', function () {
   orderedFlag = document.getElementById('orderedFlag');
-  if (orderedFlag.textContent == '1') {
-    orderLink.orderBtn.textContent = 'View Order';
-    orderLink.href = 'order_success.html';
+  if (orderedFlag && orderedFlag.textContent.trim() == 'True') {
+    orderBtn.textContent = 'View Order';
+    orderLink.href = '/order_success.html';
   } 
 })

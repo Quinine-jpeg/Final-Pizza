@@ -16,8 +16,8 @@ def insertUser(username, password, email):
         con.close()
         return False
     cur.execute(
-        "INSERT INTO users (username, password, email, credit) VALUES (?,?,?,?)",
-        (username, password, email, 0)
+        "INSERT INTO users (username, password, email, credit, clearance) VALUES (?,?,?,?,?)",
+        (username, password, email, 0, False)
     )
     con.commit()
     cur.execute("select last_insert_rowid()")
@@ -53,9 +53,13 @@ def addOrder(pizza, uid, address=None):
         cur.execute('select price from pizzas where name = ?', (i,))
         price += cur.fetchone()[0] * pizza[i]
 
-    if address == None and uid:
-        cur.execute(f"select address from users where id = '{uid}'")
+    cur.execute(f"select address from users where id = '{uid}'")
+    if address == None:
         address = cur.fetchone()
+        if address:
+            address = address[0]
+    elif cur.fetchone() == None:
+        cur.execute('update users set address = ? where id = ?', (address, uid))
 
     cur.execute(f"insert into orders (userid, pizzas, address, status, price) values (?,?,?,?,?)", (uid, pizzas, address, 'unpaid', price))
     con.commit()
@@ -174,8 +178,10 @@ def allOrders():
 def ordersByUid(id):
     con = sql.connect('../database/data.db')
     cur = con.cursor()
-    cur.execute('select id from orders where userid = ?', (id,))
-    id = cur.fetchall()
+    cur.execute('select id from orders where userid = ? and status != "complete"', (id,))
+    id = cur.fetchone()
+    if id is not None:
+        id = id[0]
     con.close()
     return id
 

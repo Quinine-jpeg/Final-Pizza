@@ -47,7 +47,10 @@ def home():
         c = checkLogin()
         if c:
             return c
-        return render_template('home.html', ordered=int(bool(dbHandler.ordersByUid(session['id']))), admin=int(dbHandler.isAdmin(session['id'])))
+        order = dbHandler.retrieveOrder(session['order_num'])
+        if order == None or order[4] == 'complete':
+            del session['order_num']
+        return render_template('home.html', ordered=bool(dbHandler.ordersByUid(session['id'])), admin=int(dbHandler.isAdmin(session['id'])))
 
 @app.route("/kitchen.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def kitchen():
@@ -80,6 +83,13 @@ def order_success():
     c = checkLogin()
     if c:
         return c
+    if not session.get('order_num'):
+        num = dbHandler.ordersByUid(session['id'])
+        if num:
+            session['order_num'] = num
+        else:
+            return redirect('home.html')
+    print(session['order_num'])
     order_content = dbHandler.retrieveOrder(session['order_num'])
     pizzas = {}
     for i in order_content[2].split(', '):
