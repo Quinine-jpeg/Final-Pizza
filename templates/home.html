@@ -9,12 +9,14 @@
   <button type='submit'>Logout</button>
 </form>
 
-<a href="manager.html">
-  <button>Order Manager</button>
-</a>
-<a href="kitchen.html">
-  <button>In-kitchen Display</button>
-</a>
+<div id="adminpages" class="hidden">
+  <a href="manager.html">
+    <button>Order Manager</button>
+  </a>
+  <a href="kitchen.html">
+    <button>In-kitchen Display</button>
+  </a>
+</div>
 
 <p id="orderedFlag" class="hidden">{{ ordered }}</p>
 {% endblock %}

@@ -162,8 +162,9 @@ label,
     overflow: hidden;
     margin-bottom:1rem;
 }
-.btn {
-    border:#000;
+button {
+    border: #000;
+    border-width: 10px;
     background:#fff;
     border-radius:5px;
     box-shadow:1px 1px 2px rgba(21, 21, 21, 0.1);
@@ -175,11 +176,11 @@ label,
     color:#333;
     margin-bottom:1rem;
 }
-.btn:focus, .btn:hover {
+button:focus, button:hover {
     box-shadow:1px 1px 2px rgba(0, 0, 0, 0.2);
     background: #bbb;
 }
-.btn:disabled {
+button:disabled {
     background: #bbb;
 }
 .about-container {

@@ -34,13 +34,11 @@ def retrieveUsers(username, password):
     if id:
         return id[0]
     
-def addOrder(pizza, uid, address=None):
-    for i in pizza.keys():
-        if pizza[i] == 0:
-            del pizza[i]
-    
+def addOrder(pizza, uid, address=None):    
     pizzas = []
     for i in pizza.keys():
+        if pizza[i] == 0:
+            continue
         for j in range(pizza[i]):
             pizzas.append(i)
     pizzas = ', '.join(pizzas)
@@ -199,4 +197,11 @@ def clearOrders():
     cur.execute('delete from orders')
     con.commit()
     con.close()
-    
+
+def nextOrders(status):
+    con = sql.connect('../database/data.db')
+    cur = con.cursor()
+    cur.execute('select id, pizzas from orders where status = ? order by id', (status,))
+    orders = cur.fetchmany(5)
+    con.close()
+    return orders

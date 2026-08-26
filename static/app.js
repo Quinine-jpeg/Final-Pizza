@@ -108,3 +108,10 @@ document.addEventListener('DOMContentLoaded', function () {
     orderLink.href = '/order_success.html';
   } 
 })
+
+document.addEventListener('DOMContentLoaded', function () {
+  adminFlag = document.getElementById('adminFlag');
+  if (adminFlag && adminFlag.textContent.trim() == '1') {
+    adminpages.classList.remove('hidden');
+  } 
+})

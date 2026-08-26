@@ -1,29 +1,26 @@
 {% extends "layout.html" %}
 <main>
   {% block content %}
-  <table>
-    <tr>
-      {% for pizza in content[0] %}
-      <!-- pizzas (by name) -->
-      <td>
-        <input type="checkbox" id="{% pizza %}">
-        <label for="{% pizza %}">{% pizza %}</label>
-      </td>
-      {% endfor %}
-    </tr>
-    <tr>
-      {% for inst in content[1] %}
-      <td>
-        <p>{% inst %}</p>
-      </td>
-      {% endfor %}
-    </tr>
-  </table>
+  {% for order in content[0] %}
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+    <input type="hidden" name="id" value="{{ order[0] }}">    
+    <button type="submit">Order #{{ order[0] }}</button>
+  </form>
+  {% endfor %}
+
+  {% for order in content[1] %}
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+    <input type="hidden" name="id" value="{{ order[0] }}">    
+    <button type="submit">Order #{{ order[0] }}</button>
+  </form>
+  <p>{{ order[1] }}</p>
+  <br>
+  {% endfor %}
+  <a href="home.html">
+    <button>Return Home</button>
+  </a>
+
   {% endblock %}
 </main>
-<script>
-  topnav.classList.add(hidden)
-</script>
-
-
-<script src="{{ url_for('static', filename='app.js') }}"></script>

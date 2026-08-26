@@ -18,8 +18,10 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
 csrf = CSRFProtect(app)
 
 def checkLogin(admin_only=False): #add check for if user is logged on page load
-    if session.get('id') is None or ((not dbHandler.isAdmin(session['id'])) and admin_only):
-        return redirect('login.html')
+    if session.get('id') is None:
+        return redirect('login.html') 
+    elif (not dbHandler.isAdmin(session['id'])) and admin_only:
+        return redirect('home.html')
 
 @app.route("/signup.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def signup():
@@ -28,9 +30,10 @@ def signup():
         password = request.form["password"]
         email = request.form["email"]
         id = dbHandler.insertUser(username, password, email)
-        if id or 'test' in email:
+        if id:
             request.method = 'none'
-            session['id'] = id
+            session['id'] = id[0]
+            session['address'] = ''
             return render_template("home.html")
         else:
             return render_template("/signup.html", error="that email is already taken, choose another")
@@ -47,17 +50,23 @@ def home():
         c = checkLogin()
         if c:
             return c
-        order = dbHandler.retrieveOrder(session['order_num'])
-        if order == None or order[4] == 'complete':
-            del session['order_num']
-        return render_template('home.html', ordered=bool(dbHandler.ordersByUid(session['id'])), admin=int(dbHandler.isAdmin(session['id'])))
+        if session.get('order_num') is not None:
+            order = dbHandler.retrieveOrder(session['order_num'])
+            if order == None or order[4] == 'complete':
+                del session['order_num']
+        return render_template('home.html', ordered=bool(dbHandler.ordersByUid(session['id'])), admin=dbHandler.isAdmin(session['id']))
 
 @app.route("/kitchen.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def kitchen():
-    c = checkLogin(admin_only=True)
-    if c:
-        return c
-    return render_template("kitchen.html", content = dbHandler.retPizzas(10)) # change based on viewing size
+    if request.method == 'POST':
+        dbHandler.progressOrder(request.form['id'])
+        print(request.form['id'])
+        return redirect('kitchen.html')
+    else:
+        c = checkLogin(admin_only=True)
+        if c:
+            return c
+        return render_template("kitchen.html", content=(dbHandler.nextOrders('pending'), dbHandler.nextOrders('cooking')))
 
 @app.route('/payment.html', methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
 def payment():
@@ -165,7 +174,7 @@ def manager():
         elif request.form['id'] == 'order':
             num = request.form['order']
             status = dbHandler.progressOrder(num)
-            return render_template('manager.html', content=(dbHandler.allOrders(), f'progressed order number {num} to {status}'))
+            return render_template('manager.html', content=(dbHandler.allOrders(), f'progressed order number {num} to "{status}"'))
         else:
             dbHandler.clearOrders()
             return render_template('manager.html', content=(dbHandler.allOrders(), 'Cleared all orders'))
