@@ -11,7 +11,7 @@ from flask_bcrypt import Bcrypt
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
 brcypt = Bcrypt(app)
 dbHandler.init(brcypt) # app obj is in main, operations are in dbh
-dbHandler.pwParity()
+#dbHandler.pwParity()
 #app.secret_key = secrets.token_hex(64)
 
 # Set secret key for CSRF protection

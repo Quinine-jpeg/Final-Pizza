@@ -2,18 +2,16 @@
 {% block error %}
 
 <main>
+
 <form action="/signup.html" method="post" class="box">
   <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
   <input type="text" name="email" id="email" placeholder="Email">
   <input type="text" name="username" id="username" placeholder="Username">
-  <input type="password" name="password" id="password" placeholder="Password">
+  <input type="password" name="password" id="pw" placeholder="Password"><br>
   <p id="errorfb">{{ error }}</p>
-  <button type="submit">Sign up</button>
+  <p id="error"></p><br>
+  <button type="submit" id="submit" disabled="true">Sign up</button>
 </form>
 
-
-<p style="display:none" id="error"></p>
 </main>
 {% endblock %}
-
-<script src="{{ url_for('static', filename='app.js') }}"></script>
