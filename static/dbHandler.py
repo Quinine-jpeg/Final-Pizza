@@ -63,6 +63,7 @@ def addOrder(pizza, uid, address=None):
     con.commit()
     cur.execute("select last_insert_rowid()")
     v = cur.fetchone()[0]
+    con.commit()
     con.close()
     return v
 
