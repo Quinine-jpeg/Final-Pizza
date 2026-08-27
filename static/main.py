@@ -3,11 +3,15 @@ from flask_cors import CORS
 from flask_wtf.csrf import CSRFProtect
 import dbHandler
 import secrets
+from flask_bcrypt import Bcrypt
 
 # Code snippet for logging a message
 # app.logger.critical("message")
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
+brcypt = Bcrypt(app)
+dbHandler.init(brcypt) # app obj is in main, operations are in dbh
+dbHandler.pwParity()
 #app.secret_key = secrets.token_hex(64)
 
 # Set secret key for CSRF protection
@@ -32,7 +36,7 @@ def signup():
         id = dbHandler.insertUser(username, password, email)
         if id:
             request.method = 'none'
-            session['id'] = id[0]
+            session['id'] = id
             session['address'] = ''
             return render_template("home.html")
         else:

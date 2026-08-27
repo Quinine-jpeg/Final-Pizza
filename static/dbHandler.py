@@ -1,4 +1,5 @@
 import sqlite3 as sql
+from flask_bcrypt import Bcrypt
 
 order_progress = {
     'unpaid': 'pending',
@@ -8,31 +9,46 @@ order_progress = {
     'driving': 'complete'
 }
 
+def init(brcypt1):
+    global bcrypt
+    bcrypt = brcypt1
+
 def insertUser(username, password, email):
     con = sql.connect("../database/data.db")
     cur = con.cursor()
     cur.execute(f"select * from users where email = '{email}'")
-    if cur.fetchall() != []:
+    if cur.fetchone() is not None:
         con.close()
         return False
+    password = bcrypt.generate_password_hash(password)
     cur.execute(
         "INSERT INTO users (username, password, email, credit, clearance) VALUES (?,?,?,?,?)",
         (username, password, email, 0, False)
     )
     con.commit()
     cur.execute("select last_insert_rowid()")
-    v = cur.fetchone()
+    v = cur.fetchone()[0]
     con.close()
     return v
 
 def retrieveUsers(username, password):
     con = sql.connect("../database/data.db")
     cur = con.cursor()
-    cur.execute(f"SELECT id FROM users WHERE email = '{username}' and password = '{password}'")
-    id = cur.fetchone()
+    cur.execute(f"SELECT password, id FROM users WHERE email = ?", (username,))
+    user = cur.fetchone()
+    if user is None:
+        con.close()
+        return None
+    
+    pw, id = user[0], user[1]
+
+    if not bcrypt.check_password_hash(pw, password):
+        print('password')
+        con.close()
+        return None
+    
     con.close()
-    if id:
-        return id[0]
+    return id
     
 def addOrder(pizza, uid, address=None):    
     pizzas = []
@@ -206,3 +222,12 @@ def nextOrders(status):
     orders = cur.fetchmany(5)
     con.close()
     return orders
+
+def pwParity():
+    con = sql.connect('../database/data.db')
+    cur = con.cursor()
+    for i in range(2, 11):
+        pw = 'password'
+        cur.execute('update users set password = ? where id = ?', (bcrypt.generate_password_hash(pw), i))
+    con.commit()
+    con.close()
