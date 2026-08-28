@@ -32,7 +32,7 @@ alter table users add column clearance boolean;
 
 --update users set clearance = false where clearance is null;
 
-
+--update pizzas set descrip = 'Cheese topped with slices of pepperoni' where id = 2;
 
 --insert into orders (userid, pizzas, address, status) values (1, '[5, 4, 7]', '10 Downing Street', 'pending');
 --insert into orders (userid, pizzas, address, status) values (2, '[2, 1, 8, 11]', '331b Baker Street', 'pending');
